@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz – Verbe cap et dérivés</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:    #1c1b2e;
+    --sky:    #1a6b8a;
+    --earth:  #c2501f;
+    --leaf:   #2a7c4f;
+    --sand:   #f5ede0;
+    --mist:   #e8f4f8;
+    --gold:   #e8a020;
+    --paper:  #fdfaf6;
+    --border: #ddd5c8;
+    --text:   #2d2a22;
+    --sub:    #6b6457;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--sand);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--ink);
+    padding: 48px 24px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 60%, rgba(26,107,138,.45) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(194,80,31,.3) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    font-size: 11px; font-weight: 700; letter-spacing: 3px;
+    color: var(--gold); text-transform: uppercase;
+    border: 1px solid rgba(232,160,32,.4);
+    padding: 4px 14px; border-radius: 20px;
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .hero h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(32px, 6vw, 52px);
+    font-weight: 600; font-style: italic;
+    color: #fff;
+    line-height: 1.15;
+    position: relative;
+  }
+  .hero h1 em { color: var(--gold); font-style: normal; }
+  .hero-sub {
+    margin-top: 12px;
+    color: rgba(255,255,255,.55);
+    font-size: 15px;
+    position: relative;
+  }
+
+  /* ── MEMO SECTION ── */
+  .memo-section {
+    max-width: 780px; margin: 0 auto;
+    padding: 40px 20px 0;
+  }
+  .memo-section h2 {
+    font-family: 'Lora', serif;
+    font-size: 22px; font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .memo-section h2::before {
+    content: '';
+    display: block; width: 4px; height: 24px;
+    background: var(--sky); border-radius: 2px;
+  }
+
+  /* Illustrated cards grid */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .illus-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .illus-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(28,27,46,.1); }
+  .illus-card .verb {
+    font-size: 22px; font-weight: 900; color: var(--ink);
+    letter-spacing: -0.5px;
+  }
+  .illus-card .gloss {
+    font-size: 13px; color: var(--sub); text-align: center; line-height: 1.4;
+  }
+  .illus-card .tag {
+    font-size: 11px; font-weight: 700; letter-spacing: 1px;
+    padding: 3px 10px; border-radius: 20px; text-transform: uppercase;
+  }
+  .tag-anim  { background: #dcfce7; color: #166534; }
+  .tag-inanim{ background: #fef3c7; color: #92400e; }
+  .tag-fact  { background: #ede9fe; color: #4c1d95; }
+  .tag-intr  { background: #e0f2fe; color: #0c4a6e; }
+  .tag-tr    { background: #fce7f3; color: #831843; }
+
+  /* Morpho rule diagram */
+  .morpho-box {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 16px;
+    padding: 28px 28px 24px;
+    margin-bottom: 32px;
+  }
+  .morpho-box h3 {
+    font-size: 13px; font-weight: 700; letter-spacing: 2px;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 20px;
+  }
+  .morpho-rows { display: flex; flex-direction: column; gap: 14px; }
+  .morpho-row {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .morph-src {
+    font-size: 20px; font-weight: 900; color: #fff;
+    background: rgba(255,255,255,.1); padding: 6px 14px; border-radius: 8px;
+    min-width: 80px; text-align: center;
+  }
+  .morph-arrow { font-size: 18px; color: var(--gold); }
+  .morph-result {
+    font-size: 20px; font-weight: 900;
+    padding: 6px 14px; border-radius: 8px; min-width: 90px; text-align: center;
+  }
+  .morph-result.drop { background: rgba(42,124,79,.3); color: #6ee7b7; }
+  .morph-result.keep { background: rgba(232,160,32,.2); color: var(--gold); }
+  .morph-label {
+    font-size: 13px; color: rgba(255,255,255,.55); flex: 1; min-width: 160px;
+  }
+  .morph-divider {
+    height: 1px; background: rgba(255,255,255,.1); margin: 6px 0;
+  }
+
+  /* ── QUIZ ── */
+  .quiz-section {
+    max-width: 780px; margin: 0 auto;
+    padding: 32px 20px 60px;
+  }
+  #progress-bar-wrap {
+    background: var(--border); border-radius: 4px; height: 6px;
+    margin-bottom: 24px; overflow: hidden;
+  }
+  #progress-bar {
+    height: 100%; border-radius: 4px;
+    background: var(--sky);
+    transition: width .4s ease;
+  }
+  .quiz-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px;
+    font-size: 13px; color: var(--sub);
+  }
+  .quiz-meta strong { color: var(--ink); }
+
+  .q-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(28,27,46,.07);
+    margin-bottom: 16px;
+  }
+  .q-card-top {
+    padding: 20px 24px 0;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .cat-badge {
+    font-size: 11px; font-weight: 700; letter-spacing: .8px;
+    padding: 4px 12px; border-radius: 20px; text-transform: uppercase;
+    color: #fff;
+  }
+  .q-num { font-size: 12px; color: var(--sub); margin-left: auto; }
+
+  /* illustration panel */
+  .q-illus {
+    margin: 16px 24px 0;
+    background: var(--mist);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .q-illus svg { flex-shrink: 0; }
+  .q-illus-text { font-size: 13px; color: var(--sky); line-height: 1.5; }
+
+  .q-text {
+    padding: 20px 24px 16px;
+    font-size: 18px; font-weight: 600; color: var(--ink);
+    line-height: 1.5;
+    font-family: 'Lora', serif;
+  }
+  .q-body { padding: 0 24px 24px; }
+
+  /* choices */
+  .choices { display: flex; flex-direction: column; gap: 10px; }
+  .choice-btn {
+    width: 100%;
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 16px;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    background: #fff; cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px; color: var(--text);
+    text-align: left;
+    transition: border-color .15s, background .15s;
+  }
+  .choice-btn:not(:disabled):hover { border-color: var(--sky); background: var(--mist); }
+  .choice-btn.selected { border-color: var(--sky); background: var(--mist); }
+  .choice-btn.correct  { border-color: var(--leaf); background: #f0fdf4; color: #14532d; font-weight: 600; }
+  .choice-btn.wrong    { border-color: var(--earth); background: #fff5f0; color: #7c2d12; }
+  .choice-letter {
+    width: 26px; height: 26px;
+    border-radius: 6px; border: 1.5px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    flex-shrink: 0; opacity: .5;
+  }
+
+  /* open answer */
+  .open-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    font-family: 'Outfit', sans-serif; font-size: 15px; color: var(--ink);
+    resize: vertical; outline: none;
+    background: #fff;
+    transition: border-color .15s;
+  }
+  .open-textarea:focus { border-color: var(--sky); }
+  .open-textarea:disabled { background: #f9f6f1; }
+
+  .model-answer {
+    margin-top: 12px;
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-radius: 10px;
+    padding: 12px 16px;
+  }
+  .model-answer-label { font-size: 11px; font-weight: 700; color: #166534; letter-spacing: .5px; text-transform: uppercase; margin-bottom: 4px; }
+  .model-answer-text  { font-size: 15px; color: #14532d; font-weight: 600; }
+
+  .expl-box {
+    margin-top: 14px;
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 13px; color: #78350f;
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+
+  .hint-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 12px;
+    background: none; border: 1px dashed var(--border);
+    color: var(--sub); border-radius: 8px;
+    padding: 7px 14px; font-size: 13px; cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: border-color .15s, color .15s;
+  }
+  .hint-btn:hover { border-color: var(--sky); color: var(--sky); }
+  .hint-text { font-size: 13px; color: var(--sky); margin-top: 8px; }
+
+  /* actions */
+  .q-actions {
+    display: flex; gap: 12px; align-items: center;
+    flex-wrap: wrap;
+  }
+  .btn-nav {
+    padding: 11px 20px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: #fff; color: var(--ink);
+    font-family: 'Outfit', sans-serif; font-size: 14px;
+    cursor: pointer; transition: opacity .2s;
+  }
+  .btn-nav:disabled { opacity: .3; cursor: default; }
+  .btn-primary {
+    flex: 1;
+    padding: 12px 20px;
+    border-radius: 10px; border: none;
+    background: var(--sky); color: #fff;
+    font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: opacity .2s, background .15s;
+  }
+  .btn-primary:disabled { opacity: .4; cursor: default; }
+  .btn-primary:not(:disabled):hover { background: #155e7a; }
+
+  .score-row {
+    text-align: center; font-size: 13px; color: var(--sub); margin-top: 8px;
+  }
+
+  /* ── RESULTS ── */
+  #results-panel { display: none; }
+  .result-hero {
+    text-align: center;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 48px 24px 36px;
+    margin-bottom: 28px;
+  }
+  .result-trophy { font-size: 56px; margin-bottom: 10px; }
+  .result-title { font-family: 'Lora', serif; font-size: 24px; font-weight: 600; color: var(--ink); margin-bottom: 14px; }
+  .result-score-big { font-size: 64px; font-weight: 900; color: var(--ink); line-height: 1; }
+  .result-score-big span { font-size: 32px; font-weight: 400; color: var(--sub); }
+  .result-msg { color: var(--sub); font-size: 15px; margin: 12px 0 24px; }
+  .btn-restart {
+    padding: 13px 32px; border-radius: 10px; border: none;
+    background: var(--ink); color: #fff;
+    font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-restart:hover { background: #2e2b45; }
+
+  .corr-title {
+    font-family: 'Lora', serif; font-size: 20px; font-weight: 600;
+    color: var(--ink); margin-bottom: 18px;
+  }
+  .corr-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-left-width: 4px;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+  }
+  .corr-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .corr-q { font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 10px; font-family: 'Lora', serif; }
+  .corr-choice { padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; font-size: 14px; }
+  .corr-choice.ok  { background: #dcfce7; color: #14532d; font-weight: 600; }
+  .corr-choice.bad { background: #fee2e2; color: #7c2d12; }
+  .corr-choice.neutral { background: #f4f4f5; color: var(--text); }
+  .corr-model { font-size: 14px; color: #14532d; background: #f0fdf4; padding: 8px 12px; border-radius: 8px; margin-top: 6px; }
+  .corr-user  { font-size: 13px; color: var(--sub); font-style: italic; margin-bottom: 4px; }
+  .corr-expl  { margin-top: 10px; font-size: 13px; color: #78350f; background: #fffbeb; padding: 8px 12px; border-radius: 8px; }
+
+  @media (max-width: 480px) {
+    .q-text { font-size: 16px; }
+    .morph-src, .morph-result { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ HERO ══════════ -->
+<header class="hero">
+  <div class="hero-eyebrow">Langue kanak · Vocabulaire</div>
+  <h1>Verbe <em>cap</em> et dérivés</h1>
+  <p class="hero-sub">Quiz interactif — 20 questions · débutant à intermédiaire</p>
+</header>
+
+<!-- ══════════ MÉMO ILLUSTRÉ ══════════ -->
+<section class="memo-section">
+  <h2>Mémo visuel</h2>
+
+  <div class="cards-grid">
+
+    <!-- cap -->
+    <div class="illus-card">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="38" fill="#e0f2fe" stroke="#1a6b8a" stroke-width="1.5"/>
+        <!-- running figure -->
+        <circle cx="28" cy="22" r="6" fill="#1a6b8a"/>
+        <line x1="28" y1="28" x2="25" y2="45" stroke="#1a6b8a" stroke-width="3" stroke-linecap="round"/>
+        <line x1="25" y1="45" x2="18" y2="58" stroke="#1a6b8a" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="25" y1="45" x2="30" y2="60" stroke="#1a6b8a" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="28" y1="35" x2="38" y2="30" stroke="#1a6b8a" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="28" y1="35" x2="20" y2="32" stroke="#1a6b8a" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- arrow motion lines -->
+        <line x1="42" y1="28" x2="60" y2="28" stroke="#c2501f" stroke-width="2" stroke-linecap="round"/>
+        <polyline points="55,23 62,28 55,33" fill="none" stroke="#c2501f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="44" y1="36" x2="58" y2="36" stroke="#c2501f" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 2"/>
+        <line x1="46" y1="42" x2="56" y2="42" stroke="#c2501f" stroke-width="1" stroke-linecap="round" stroke-dasharray="3 2"/>
+      </svg>
+      <div class="verb">cap</div>
+      <div class="gloss">s'enfuir, aller à<br>toute allure</div>
+      <span class="tag tag-intr">intransitif</span>
+    </div>
+
+    <!-- ca-ve -->
+    <div class="illus-card">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="38" fill="#fffbeb" stroke="#e8a020" stroke-width="1.5"/>
+        <!-- figure running + spear -->
+        <circle cx="26" cy="22" r="5.5" fill="#e8a020"/>
+        <line x1="26" y1="27" x2="23" y2="44" stroke="#e8a020" stroke-width="3" stroke-linecap="round"/>
+        <line x1="23" y1="44" x2="17" y2="56" stroke="#e8a020" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="23" y1="44" x2="28" y2="58" stroke="#e8a020" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- arm holding spear -->
+        <line x1="26" y1="34" x2="36" y2="28" stroke="#e8a020" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- spear -->
+        <line x1="34" y1="18" x2="52" y2="42" stroke="#c2501f" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="52,42 47,38 50,45" fill="#c2501f"/>
+        <!-- label doo -->
+        <text x="55" y="24" font-size="10" fill="#c2501f" font-family="Outfit,sans-serif" font-weight="700">doo</text>
+        <!-- arrow -->
+        <line x1="34" y1="64" x2="58" y2="64" stroke="#e8a020" stroke-width="1.5" stroke-linecap="round"/>
+        <polyline points="54,60 60,64 54,68" fill="none" stroke="#e8a020" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="verb">ca-ve</div>
+      <div class="gloss">s'enfuir avec<br>(objet inanimé)</div>
+      <span class="tag tag-inanim">inanimé</span>
+    </div>
+
+    <!-- ca-vi -->
+    <div class="illus-card">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="38" fill="#f0fdf4" stroke="#2a7c4f" stroke-width="1.5"/>
+        <!-- adult running -->
+        <circle cx="24" cy="20" r="5.5" fill="#2a7c4f"/>
+        <line x1="24" y1="25" x2="21" y2="42" stroke="#2a7c4f" stroke-width="3" stroke-linecap="round"/>
+        <line x1="21" y1="42" x2="15" y2="55" stroke="#2a7c4f" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="21" y1="42" x2="26" y2="56" stroke="#2a7c4f" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- arm holding child -->
+        <line x1="24" y1="32" x2="36" y2="30" stroke="#2a7c4f" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- child -->
+        <circle cx="40" cy="25" r="4.5" fill="#2a7c4f" opacity=".7"/>
+        <line x1="40" y1="29" x2="38" y2="40" stroke="#2a7c4f" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+        <line x1="38" y1="40" x2="34" y2="50" stroke="#2a7c4f" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+        <line x1="38" y1="40" x2="42" y2="50" stroke="#2a7c4f" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+        <!-- label -->
+        <text x="44" y="20" font-size="9" fill="#2a7c4f" font-family="Outfit,sans-serif" font-weight="700">pwaxi</text>
+        <!-- arrow -->
+        <line x1="48" y1="60" x2="65" y2="60" stroke="#2a7c4f" stroke-width="1.5" stroke-linecap="round"/>
+        <polyline points="61,56 67,60 61,64" fill="none" stroke="#2a7c4f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="verb">ca-vi</div>
+      <div class="gloss">s'enfuir avec<br>(objet animé)</div>
+      <span class="tag tag-anim">animé</span>
+    </div>
+
+    <!-- cawi -->
+    <div class="illus-card">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="38" fill="#fce7f3" stroke="#be185d" stroke-width="1.5"/>
+        <!-- fleeing figure (left) -->
+        <circle cx="20" cy="22" r="5.5" fill="#be185d"/>
+        <line x1="20" y1="27" x2="17" y2="44" stroke="#be185d" stroke-width="3" stroke-linecap="round"/>
+        <line x1="17" y1="44" x2="11" y2="56" stroke="#be185d" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="17" y1="44" x2="22" y2="57" stroke="#be185d" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- chasing figure (right) -->
+        <circle cx="52" cy="24" r="5.5" fill="#831843"/>
+        <line x1="52" y1="29" x2="50" y2="45" stroke="#831843" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="50" y1="45" x2="44" y2="56" stroke="#831843" stroke-width="2" stroke-linecap="round"/>
+        <line x1="50" y1="45" x2="55" y2="57" stroke="#831843" stroke-width="2" stroke-linecap="round"/>
+        <!-- arrow between them -->
+        <line x1="28" y1="40" x2="46" y2="40" stroke="#be185d" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 2"/>
+        <text x="30" y="36" font-size="9" fill="#be185d" font-family="Outfit,sans-serif" font-weight="700">fuit →</text>
+      </svg>
+      <div class="verb">cawi</div>
+      <div class="gloss">fuir quelqu'un<br>(animé)</div>
+      <span class="tag tag-tr">transitif animé</span>
+    </div>
+
+    <!-- cawili -->
+    <div class="illus-card">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="38" fill="#fef9ee" stroke="#d97706" stroke-width="1.5"/>
+        <!-- figure running away from object -->
+        <circle cx="52" cy="22" r="5.5" fill="#d97706"/>
+        <line x1="52" y1="27" x2="55" y2="44" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+        <line x1="55" y1="44" x2="61" y2="56" stroke="#d97706" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="55" y1="44" x2="50" y2="57" stroke="#d97706" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- object (rock/thing) -->
+        <ellipse cx="22" cy="50" rx="14" ry="10" fill="#92400e" opacity=".3"/>
+        <ellipse cx="22" cy="47" rx="12" ry="8" fill="#92400e" opacity=".5"/>
+        <text x="15" y="51" font-size="9" fill="#fff" font-family="Outfit,sans-serif" font-weight="700">chose</text>
+        <!-- arrow -->
+        <line x1="36" y1="42" x2="46" y2="38" stroke="#d97706" stroke-width="2" stroke-linecap="round"/>
+        <polyline points="38,37 44,37 44,43" fill="none" stroke="#d97706" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="verb">cawili</div>
+      <div class="gloss">fuir quelque chose<br>(inanimé)</div>
+      <span class="tag tag-inanim">transitif inanimé</span>
+    </div>
+
+    <!-- payava -->
+    <div class="illus-card">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="38" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+        <!-- causer (left, standing) -->
+        <circle cx="18" cy="22" r="5.5" fill="#7c3aed"/>
+        <line x1="18" y1="27" x2="18" y2="50" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+        <line x1="18" y1="50" x2="13" y2="62" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="18" y1="50" x2="23" y2="62" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- arm gesturing -->
+        <line x1="18" y1="35" x2="30" y2="30" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round"/>
+        <!-- causer label -->
+        <text x="6" y="15" font-size="8" fill="#7c3aed" font-family="Outfit,sans-serif" font-weight="700">cause</text>
+        <!-- animal running away (right) -->
+        <!-- pig body -->
+        <ellipse cx="56" cy="46" rx="12" ry="8" fill="#f5d0a9" stroke="#92400e" stroke-width="1.2"/>
+        <circle cx="66" cy="44" r="5" fill="#f5d0a9" stroke="#92400e" stroke-width="1.2"/>
+        <circle cx="68" cy="43" r="1.5" fill="#92400e"/>
+        <!-- legs -->
+        <line x1="48" y1="52" x2="46" y2="60" stroke="#92400e" stroke-width="2" stroke-linecap="round"/>
+        <line x1="52" y1="53" x2="50" y2="61" stroke="#92400e" stroke-width="2" stroke-linecap="round"/>
+        <line x1="60" y1="53" x2="58" y2="61" stroke="#92400e" stroke-width="2" stroke-linecap="round"/>
+        <line x1="64" y1="52" x2="62" y2="60" stroke="#92400e" stroke-width="2" stroke-linecap="round"/>
+        <!-- tail -->
+        <path d="M44,44 Q40,40 43,37" fill="none" stroke="#92400e" stroke-width="1.5"/>
+        <!-- motion arrow -->
+        <line x1="32" y1="38" x2="42" y2="42" stroke="#c2501f" stroke-width="2" stroke-linecap="round"/>
+        <polyline points="38,38 44,41 40,46" fill="none" stroke="#c2501f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="verb">payava / payavi</div>
+      <div class="gloss">faire s'échapper<br>(factitif)</div>
+      <span class="tag tag-fact">factitif</span>
+    </div>
+
+  </div><!-- /cards-grid -->
+
+  <!-- Règle morphologique -->
+  <h2>Règle morphologique</h2>
+  <div class="morpho-box">
+    <h3>Chute de la consonne finale · cap → ca-</h3>
+    <div class="morpho-rows">
+      <div class="morpho-row">
+        <div class="morph-src">cap</div>
+        <div class="morph-arrow">+</div>
+        <div class="morph-src" style="min-width:60px">ve</div>
+        <div class="morph-arrow">=</div>
+        <div class="morph-result drop">ca-ve</div>
+        <div class="morph-label">comitatif inanimé — <em>le p chute</em></div>
+      </div>
+      <div class="morpho-row">
+        <div class="morph-src">cap</div>
+        <div class="morph-arrow">+</div>
+        <div class="morph-src" style="min-width:60px">vi</div>
+        <div class="morph-arrow">=</div>
+        <div class="morph-result drop">ca-vi</div>
+        <div class="morph-label">comitatif animé — <em>le p chute</em></div>
+      </div>
+      <div class="morpho-divider"></div>
+      <div class="morpho-row">
+        <div class="morph-src">cap</div>
+        <div class="morph-arrow">+</div>
+        <div class="morph-src" style="min-width:60px">ve Pum</div>
+        <div class="morph-arrow">=</div>
+        <div class="morph-result keep">cap ve Pum</div>
+        <div class="morph-label">directionnel (vers) — <em>le p est maintenu</em></div>
+      </div>
+    </div>
+  </div>
+
+</section><!-- /memo-section -->
+
+<!-- ══════════ QUIZ ══════════ -->
+<section class="quiz-section">
+  <h2 style="margin-bottom:20px">Quiz</h2>
+
+  <div id="progress-bar-wrap"><div id="progress-bar" style="width:5%"></div></div>
+  <div class="quiz-meta">
+    <span>Question <strong id="q-counter">1</strong> / 20</span>
+    <span>Score : <strong id="score-live">0</strong></span>
+  </div>
+
+  <div id="quiz-panel">
+    <div class="q-card">
+      <div class="q-card-top">
+        <span class="cat-badge" id="q-badge">—</span>
+        <span class="q-num" id="q-num-label">Q1</span>
+      </div>
+      <div id="q-illus-wrap"></div>
+      <div class="q-text" id="q-text">…</div>
+      <div class="q-body" id="q-body"></div>
+    </div>
+    <div class="q-actions">
+      <button class="btn-nav" id="btn-prev" onclick="go(-1)" disabled>← Préc.</button>
+      <button class="btn-primary" id="btn-action" onclick="handleAction()">Valider</button>
+    </div>
+    <div class="score-row" id="score-row-sub"></div>
+  </div>
+
+  <div id="results-panel">
+    <div class="result-hero">
+      <div class="result-trophy">🏆</div>
+      <div class="result-title">Résultat final</div>
+      <div class="result-score-big"><span id="final-score">0</span> <span>/ 20</span></div>
+      <p class="result-msg" id="result-msg"></p>
+      <button class="btn-restart" onclick="restart()">Recommencer</button>
+    </div>
+    <div class="corr-title">Corrigé complet avec explications</div>
+    <div id="correction-list"></div>
+  </div>
+
+</section>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+
+const CAT_COLORS = {
+  "Traduction → fr":   "#1a6b8a",
+  "Traduction → lng":  "#7c3aed",
+  "QCM – Sens":        "#0891b2",
+  "Animé / Inanimé":   "#2a7c4f",
+  "Morphologie":       "#d97706",
+  "Choix du verbe":    "#c2501f",
+  "Production":        "#be185d",
+};
+
+// SVG illustrations per question id (small inline SVGs)
+const ILLUS = {
+  1: { svg: `<svg width="60" height="50" viewBox="0 0 60 50"><circle cx="12" cy="10" r="5" fill="#1a6b8a"/><line x1="12" y1="15" x2="10" y2="30" stroke="#1a6b8a" stroke-width="2.5" stroke-linecap="round"/><line x1="10" y1="30" x2="5" y2="42" stroke="#1a6b8a" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="30" x2="14" y2="42" stroke="#1a6b8a" stroke-width="2" stroke-linecap="round"/><line x1="20" y1="20" x2="50" y2="20" stroke="#c2501f" stroke-width="2" stroke-linecap="round"/><polyline points="45,15 52,20 45,25" fill="none" stroke="#c2501f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><text x="34" y="16" font-size="9" fill="#c2501f" font-family="Outfit,sans-serif" font-weight="700">Pum</text></svg>`,
+     text: "cap + ve directionnel = se diriger vers Poum" },
+  2: { svg: `<svg width="60" height="50" viewBox="0 0 60 50"><circle cx="12" cy="10" r="5" fill="#e8a020"/><line x1="12" y1="15" x2="9" y2="30" stroke="#e8a020" stroke-width="2.5" stroke-linecap="round"/><line x1="9" y1="30" x2="4" y2="42" stroke="#e8a020" stroke-width="2" stroke-linecap="round"/><line x1="9" y1="30" x2="13" y2="42" stroke="#e8a020" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="22" x2="22" y2="17" stroke="#e8a020" stroke-width="2" stroke-linecap="round"/><line x1="20" y1="12" x2="38" y2="32" stroke="#c2501f" stroke-width="2.5" stroke-linecap="round"/><polygon points="38,32 33,28 36,35" fill="#c2501f"/><text x="40" y="14" font-size="8" fill="#c2501f" font-family="Outfit,sans-serif">doo</text></svg>`,
+     text: "ca-ve = cap + ve comitatif (inanimé) — le p chute" },
+  3: { svg: `<svg width="60" height="50" viewBox="0 0 60 50"><circle cx="12" cy="10" r="5" fill="#2a7c4f"/><line x1="12" y1="15" x2="9" y2="30" stroke="#2a7c4f" stroke-width="2.5" stroke-linecap="round"/><line x1="9" y1="30" x2="4" y2="42" stroke="#2a7c4f" stroke-width="2" stroke-linecap="round"/><line x1="9" y1="30" x2="13" y2="42" stroke="#2a7c4f" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="22" x2="22" y2="17" stroke="#2a7c4f" stroke-width="2" stroke-linecap="round"/><circle cx="26" cy="12" r="4" fill="#2a7c4f" opacity=".7"/><text x="30" y="10" font-size="8" fill="#2a7c4f" font-family="Outfit,sans-serif">pwaxi</text></svg>`,
+     text: "ca-vi = cap + vi comitatif (animé) — enfant transporté" },
+  4: { svg: `<svg width="60" height="50" viewBox="0 0 60 50"><circle cx="15" cy="10" r="5" fill="#be185d"/><line x1="15" y1="15" x2="12" y2="30" stroke="#be185d" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="30" x2="7" y2="42" stroke="#be185d" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="30" x2="16" y2="42" stroke="#be185d" stroke-width="2" stroke-linecap="round"/><circle cx="44" cy="12" r="5" fill="#831843"/><line x1="44" y1="17" x2="42" y2="32" stroke="#831843" stroke-width="2" stroke-linecap="round"/><line x1="42" y1="32" x2="37" y2="43" stroke="#831843" stroke-width="2" stroke-linecap="round"/><line x1="42" y1="32" x2="47" y2="43" stroke="#831843" stroke-width="2" stroke-linecap="round"/><text x="22" y="28" font-size="9" fill="#be185d" font-family="Outfit,sans-serif" font-weight="700">cawi</text></svg>`,
+     text: "cawi : fuir quelqu'un — objet animé" },
+  5: { svg: `<svg width="60" height="50" viewBox="0 0 60 50"><circle cx="12" cy="10" r="5" fill="#7c3aed"/><line x1="12" y1="15" x2="12" y2="32" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="32" x2="7" y2="43" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="32" x2="17" y2="43" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="22" x2="24" y2="18" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"/><ellipse cx="42" cy="36" rx="10" ry="7" fill="#f5d0a9" stroke="#92400e" stroke-width="1"/><circle cx="50" cy="34" r="4" fill="#f5d0a9" stroke="#92400e" stroke-width="1"/><circle cx="52" cy="33" r="1.2" fill="#92400e"/><line x1="35" y1="42" x2="33" y2="49" stroke="#92400e" stroke-width="1.5" stroke-linecap="round"/><line x1="38" y1="43" x2="36" y2="50" stroke="#92400e" stroke-width="1.5" stroke-linecap="round"/><line x1="46" y1="43" x2="44" y2="50" stroke="#92400e" stroke-width="1.5" stroke-linecap="round"/><line x1="49" y1="42" x2="47" y2="49" stroke="#92400e" stroke-width="1.5" stroke-linecap="round"/><text x="28" y="22" font-size="7" fill="#92400e" font-family="Outfit,sans-serif" font-weight="700">nok</text><text x="4" y="7" font-size="8" fill="#7c3aed" font-family="Outfit,sans-serif">cause</text></svg>`,
+     text: "payava : la houle (cause) fait fuir les poissons (nok). Phrase : alô eena pe-â mwe-xo i aula-m xe payava hlaaleny nok." },
+};
+
+const Qs = [
+  { id:1,  cat:"Traduction → fr",  q:"Traduisez : « i cap ve Pum »",
+    type:"open", ans:"Il s'enfuit vers Poum.", expl:"cap + ve directionnel (vers) → la consonne p est maintenue." },
+  { id:2,  cat:"Traduction → fr",  q:"Traduisez : « i ca-ve doo-n »",
+    type:"open", ans:"Il s'est enfui avec sa sagaie.", expl:"ca-ve = cap + ve comitatif (objet inanimé, p chute)." },
+  { id:3,  cat:"Traduction → fr",  q:"Traduisez : « i ca-vi pwaxi-n »",
+    type:"open", ans:"Elle s'enfuit avec son enfant.", expl:"ca-vi = cap + vi comitatif (objet animé, p chute)." },
+  { id:4,  cat:"Traduction → fr",  q:"Traduisez : « co cawi-na tu »",
+    type:"open", ans:"Tu me fuis.", expl:"co = tu ; cawi-na = fuis-moi ; tu = toi/moi (objet). → Tu me fuis." },
+  { id:5,  cat:"Traduction → fr",  q:"Traduisez : « alô eena pe-â mwe-xo i aula-m xe payava hlaaleny nok »",
+    type:"open", ans:"Cet enfant est parti vers là au hasard et il a fait de la houle. Ça a fait fuir les poissons.", expl:"payava = factitif : le sujet (houle) cause la fuite des poissons (nok). Le sujet ne fuit pas lui-même." },
+  { id:6,  cat:"Traduction → lng", q:"Dites « Il s'est enfui avec son enfant » en utilisant la forme correcte de cap.",
+    type:"open", ans:"i ca-vi pwaxi-n", expl:"Enfant = animé → comitatif vi → ca-vi." },
+  { id:7,  cat:"Traduction → lng", q:"Comment dit-on « Il s'est sauvé de la noyade » ?",
+    type:"open", ans:"i ca-vi-e xe i maxup", expl:"ca-vi + -e (objet) + xe i maxup (de la noyade)." },
+  { id:8,  cat:"QCM – Sens", q:"Que signifie cap ?",
+    type:"mcq", choices:["Fuir quelqu'un","S'enfuir, aller à toute allure","Faire fuir quelqu'un","Voler un objet"], correct:1,
+    expl:"cap est intransitif : s'enfuir, aller à toute allure." },
+  { id:9,  cat:"QCM – Sens", q:"Quelle est la différence entre cawi et cawili ?",
+    type:"mcq", choices:["cawi = inanimé ; cawili = animé","cawi = animé (fuir qqn) ; cawili = inanimé (fuir qqch)","Ils sont synonymes","cawili est un factitif"], correct:1,
+    expl:"cawi → objet animé ; cawili → objet inanimé." },
+  { id:10, cat:"QCM – Sens", q:"Lequel de ces verbes est un factitif ?",
+    type:"mcq", choices:["ca-ve","ca-vi","payava / payavi","cawi"], correct:2,
+    expl:"payava/payavi : le sujet provoque la fuite d'un autre — il ne fuit pas lui-même." },
+  { id:11, cat:"Animé / Inanimé", q:"Une sagaie (doo) est-elle grammaticalement animée ou inanimée ?",
+    type:"mcq", choices:["Animée","Inanimée"], correct:1,
+    expl:"Une sagaie est un objet → inanimé → on utilise ca-ve." },
+  { id:12, cat:"Animé / Inanimé", q:"Pour « s'enfuir avec un enfant », quel verbe ?",
+    type:"mcq", choices:["ca-ve","ca-vi","cawili","payavi"], correct:1,
+    expl:"Un enfant est animé → ca-vi (comitatif animé vi)." },
+  { id:13, cat:"Morphologie", q:"Pourquoi écrit-on ca-ve et non cap-ve ?",
+    type:"mcq", choices:["C'est une exception lexicale","La consonne finale p chute devant le comitatif ve","ve absorbe le p par assimilation","cap → ca- devant tout suffixe"], correct:1,
+    expl:"Règle : devant les marques du comitatif (ve, vi), la consonne finale p de cap chute." },
+  { id:14, cat:"Morphologie", q:"Dans « i cap ve Pum », la consonne p est-elle maintenue ou chute-t-elle ?",
+    type:"mcq", choices:["Elle chute, car ve suit cap","Elle est maintenue : ve est ici un directionnel (vers), pas le comitatif"], correct:1,
+    expl:"ve peut être comitatif ou directionnel. Devant le directionnel, p est maintenu : cap ve Pum." },
+  { id:15, cat:"Morphologie", q:"Complétez : cap + vi (comitatif animé) = ___",
+    type:"open", ans:"ca-vi", expl:"La consonne finale p chute devant vi : cap + vi → ca-vi." },
+  { id:16, cat:"Choix du verbe", q:"« Il s'est enfui avec sa lance. » (lance = inanimé) Quel verbe ?",
+    type:"mcq", choices:["ca-vi","ca-ve","cawi","payava"], correct:1,
+    expl:"Lance = inanimé → comitatif ve → ca-ve." },
+  { id:17, cat:"Choix du verbe", q:"« Elle fait fuir les oiseaux. » Quel verbe convient ?",
+    type:"mcq", choices:["cap","ca-vi","payava / payavi","cawili"], correct:2,
+    expl:"Le sujet cause la fuite d'un autre → factitif payava / payavi." },
+  { id:18, cat:"Choix du verbe", q:"« Il fuit le danger. » (danger = inanimé) Quel verbe ?",
+    type:"mcq", choices:["cawi","cawili","ca-ve","cap"], correct:1,
+    expl:"cawili = fuir quelque chose (inanimé), verbe transitif." },
+  { id:19, cat:"Production", q:"Construisez une phrase signifiant « Elle fuit son mari. » (mari = aar-on, utilisez cawi).",
+    type:"open", ans:"i cawi aar-on", expl:"cawi est transitif animé : sujet i (elle) + cawi + aar-on (son mari). Rappel : i u â aar-on = son mari est parti." },
+  { id:20, cat:"Production", q:"Exprimez « Ça a fait fuir les poissons » avec payava. (poissons = nok, chien = Tavia)",
+    type:"open", ans:"i payava-e hlaaleny nok — ex. complet : alô eena pe-â mwe-xo i aula-m xe payava hlaaleny nok", expl:"payava + -e (objet) + hlaaleny nok (les poissons). Autre ex. avec un animé : i payava-e Tavia (il a fait fuir Tavia, le chien)." },
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let cur = 0;
+let answers = {}; // id → { correct: bool|null, input: str, choice: int }
+let submitted = false;
+let hintShown = false;
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  const q = Qs[cur];
+  submitted = !!answers[q.id];
+  hintShown = false;
+
+  // progress
+  document.getElementById('progress-bar').style.width = ((cur + 1) / Qs.length * 100) + '%';
+  document.getElementById('q-counter').textContent = cur + 1;
+  const mcqScore = Qs.filter(x => answers[x.id]?.correct === true).length;
+  document.getElementById('score-live').textContent = mcqScore;
+
+  // badge
+  const badge = document.getElementById('q-badge');
+  badge.textContent = q.cat;
+  badge.style.background = CAT_COLORS[q.cat] || '#1a6b8a';
+  document.getElementById('q-num-label').textContent = 'Q' + q.id;
+
+  // illustration
+  const illusWrap = document.getElementById('q-illus-wrap');
+  const ill = ILLUS[q.id];
+  if (ill) {
+    illusWrap.innerHTML = `<div class="q-illus">${ill.svg}<span class="q-illus-text">${ill.text}</span></div>`;
+  } else {
+    illusWrap.innerHTML = '';
+  }
+
+  // question text
+  document.getElementById('q-text').textContent = q.question || q.q;
+
+  // body
+  const body = document.getElementById('q-body');
+  body.innerHTML = '';
+
+  if (q.type === 'mcq') {
+    const div = document.createElement('div');
+    div.className = 'choices';
+    q.choices.forEach((c, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      if (submitted) {
+        btn.disabled = true;
+        if (i === q.correct) btn.classList.add('correct');
+        else if (answers[q.id]?.choice === i) btn.classList.add('wrong');
+      } else {
+        if (answers[q.id]?.choice === i) btn.classList.add('selected');
+        btn.onclick = () => selectChoice(i);
+      }
+      btn.innerHTML = `<span class="choice-letter">${String.fromCharCode(65+i)}</span>${c}`;
+      div.appendChild(btn);
+    });
+    body.appendChild(div);
+  } else {
+    // open
+    const ta = document.createElement('textarea');
+    ta.className = 'open-textarea';
+    ta.placeholder = 'Écrivez votre réponse ici…';
+    ta.value = answers[q.id]?.input || '';
+    if (submitted) ta.disabled = true;
+    else ta.oninput = () => { answers[q.id] = { ...(answers[q.id]||{}), input: ta.value }; };
+    body.appendChild(ta);
+
+    if (submitted) {
+      const mbox = document.createElement('div');
+      mbox.className = 'model-answer';
+      mbox.innerHTML = `<div class="model-answer-label">Réponse attendue</div><div class="model-answer-text">${q.ans || q.answer}</div>`;
+      body.appendChild(mbox);
+    }
+  }
+
+  // explanation
+  if (submitted && q.expl) {
+    const ex = document.createElement('div');
+    ex.className = 'expl-box';
+    ex.innerHTML = `<span>💡</span><span>${q.expl}</span>`;
+    body.appendChild(ex);
+  }
+
+  // hint button (open questions, not yet submitted)
+  if (!submitted && q.type !== 'mcq' && (q.hint || q.expl)) {
+    const hb = document.createElement('button');
+    hb.className = 'hint-btn';
+    hb.textContent = "Voir l'indice";
+    hb.onclick = () => {
+      if (!hintShown) {
+        const ht = document.createElement('p');
+        ht.className = 'hint-text';
+        ht.textContent = '💡 ' + (q.expl || q.hint);
+        body.appendChild(ht);
+        hintShown = true;
+        hb.remove();
+      }
+    };
+    body.appendChild(hb);
+  }
+
+  // action button
+  const btn = document.getElementById('btn-action');
+  if (!submitted) {
+    btn.textContent = 'Valider';
+    btn.disabled = (q.type === 'mcq' && answers[q.id]?.choice === undefined);
+  } else {
+    btn.textContent = cur < Qs.length - 1 ? 'Suivant →' : 'Voir le résultat';
+    btn.disabled = false;
+  }
+
+  document.getElementById('btn-prev').disabled = cur === 0;
+  document.getElementById('score-row-sub').textContent = '';
+}
+
+function selectChoice(i) {
+  const q = Qs[cur];
+  answers[q.id] = { ...(answers[q.id]||{}), choice: i };
+  render();
+}
+
+function handleAction() {
+  const q = Qs[cur];
+  if (!submitted) {
+    // validate
+    if (q.type === 'mcq') {
+      const isOk = answers[q.id]?.choice === q.correct;
+      answers[q.id] = { ...answers[q.id], correct: isOk };
+    } else {
+      const inp = answers[q.id]?.input || '';
+      answers[q.id] = { ...answers[q.id], correct: null, input: inp }; // open = no auto-score
+    }
+    submitted = true;
+    render();
+  } else {
+    // next or result
+    if (cur < Qs.length - 1) {
+      cur++;
+      render();
+    } else {
+      showResults();
+    }
+  }
+}
+
+function go(delta) {
+  cur += delta;
+  render();
+}
+
+function showResults() {
+  document.getElementById('quiz-panel').style.display = 'none';
+  const rp = document.getElementById('results-panel');
+  rp.style.display = 'block';
+
+  const mcqScore = Qs.filter(x => answers[x.id]?.correct === true).length;
+  document.getElementById('final-score').textContent = mcqScore;
+
+  const msgs = ["Continuez à réviser, vous progressez !", "Bon travail !", "Très bien !", "Excellent !"];
+  document.getElementById('result-msg').textContent = mcqScore >= 16 ? msgs[3] : mcqScore >= 11 ? msgs[2] : mcqScore >= 6 ? msgs[1] : msgs[0];
+
+  // build correction
+  const list = document.getElementById('correction-list');
+  list.innerHTML = '';
+  Qs.forEach(q => {
+    const ans = answers[q.id];
+    const cc = CAT_COLORS[q.cat] || '#1a6b8a';
+    const card = document.createElement('div');
+    card.className = 'corr-card';
+    card.style.borderLeftColor = cc;
+
+    let inner = `<div class="corr-card-top">
+      <span class="cat-badge" style="background:${cc}">${q.cat}</span>
+      <span class="q-num" style="font-size:12px;color:#6b6457">Q${q.id}</span>
+    </div>
+    <p class="corr-q">${q.question || q.q}</p>`;
+
+    if (q.type === 'mcq') {
+      q.choices.forEach((c, i) => {
+        let cls = 'neutral';
+        if (i === q.correct) cls = 'ok';
+        else if (ans?.choice === i) cls = 'bad';
+        inner += `<div class="corr-choice ${cls}">${i === q.correct ? '✓ ' : (ans?.choice===i ? '✗ ' : '')}${c}</div>`;
+      });
+    } else {
+      if (ans?.input) inner += `<p class="corr-user">Votre réponse : ${ans.input}</p>`;
+      inner += `<div class="corr-model"><strong>Réponse attendue :</strong> ${q.ans || q.answer}</div>`;
+    }
+
+    if (q.expl) inner += `<p class="corr-expl">💡 ${q.expl}</p>`;
+    card.innerHTML = inner;
+    list.appendChild(card);
+  });
+}
+
+function restart() {
+  cur = 0;
+  answers = {};
+  submitted = false;
+  document.getElementById('results-panel').style.display = 'none';
+  document.getElementById('quiz-panel').style.display = 'block';
+  render();
+}
+
+// init
+render();
+</script>
+</body>
+</html>
